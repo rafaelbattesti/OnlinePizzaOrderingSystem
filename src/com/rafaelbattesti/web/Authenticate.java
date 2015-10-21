@@ -1,6 +1,8 @@
 package com.rafaelbattesti.web;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -32,13 +34,21 @@ public class Authenticate extends HttpServlet {
 		//Creates a manager to authenticate admin
 		Manager manager = new Manager();
 		
+		//Gets parameters from user
+		String username = request.getParameter("username");
+		String password = request.getParameter("password");
+		
 		//Authenticate
-		boolean isAuth = manager.authenticate(request.getParameter("username"), request.getParameter("password"));
+		boolean isAuth = manager.authenticate(username, password);
+		
+		//Print html
+		PrintWriter out = response.getWriter();
+		response.setContentType("text/html");
 		
 		if (isAuth) {
-			response.sendRedirect("/Admin");
+			out.println("Hello " + username + "!");
 		} else {
-			//Send to error page
+			out.println(manager.getDatabaseMessage() + "!");
 		}
 		
 	}
