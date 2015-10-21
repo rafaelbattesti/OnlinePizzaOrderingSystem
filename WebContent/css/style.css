@@ -1,0 +1,107 @@
+@CHARSET "UTF-8";
+
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,900);
+
+body {
+	font-family: 'Roboto', sans-serif;
+	color: #2980b9; 
+	font-weight : 900; 
+	width: 930px;
+	height: 15px;
+	margin: 0 auto;
+}
+
+#navigation {
+	margin: 0; display : flex;
+	list-style: none;
+	display: flex;
+}
+
+#navigation li {
+	font-family: 'Roboto', sans-serif;
+	font-size: 1.1em;
+	color: #2980b9; 
+	font-weight : 900; 
+	cursor : pointer;
+	padding: 10px 20px;
+	cursor: pointer;
+}
+
+#navigation li:hover {
+	color: #e74c3c;
+}
+
+#navigation li.active {
+	color: #27ae60;
+}
+
+#adminLogin {
+	font-size: 0.8em;
+	text-align: right;
+	padding: 10px;
+}
+
+#logoContainer {
+	margin: 10px;
+}
+
+#logoContainer img {
+	float: left;
+	height: 120px;
+	width: auto;
+}
+
+#pageContent {
+	border: 2px solid #2980b9;
+	border-radius: 10px; height : 400px;
+	padding: 50px 20px;
+	height: 400px;
+}
+
+fieldset {
+	position: relative;
+	margin: 0 auto;
+	width: 30%;
+	background-color: #ecf0f1;
+	border-radius: 8px;
+	border: 1px solid #2980b9;
+}
+
+table {
+	margin: 0 auto;
+}
+
+legend {
+	font-family: 'Roboto', sans-serif;
+	font-size: 1.1em;
+	color: #2980b9; 
+	font-weight : 900; 
+}
+
+td {
+	text-align: right;
+}
+
+#button {
+	font-family: 'Roboto', sans-serif;
+	color: #2980b9;
+	font-size: 1em;
+	font-weight : 900; 
+	border: 1px solid #2980b9;
+	border-radius: 5px;
+	width: 80px;
+	padding: 5px 10px;
+	background-color: #ffffff;
+	cursor: pointer;
+}
+
+#button:hover {
+	background-color: #2980b9;
+	color: #ffffff;
+}
+
+footer {
+	text-align: center;
+	color: #2980b9;
+	padding: 10px;
+}

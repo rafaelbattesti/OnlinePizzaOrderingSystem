@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Admin Area</title>
+<link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>
+
+	<header>
+		<div id="logoContainer">
+			<img alt="logo" src="img/logo.jpg">
+		</div>
+		<div id="adminLogin">
+			<a href="OnlinePizza.html">order page</a>
+		</div>
+		<nav>
+			<ul id="navigation">
+				<li>ADMINISTRATIVE AREA</li>
+			</ul>
+		</nav>
+	</header>
+
+	<div id="pageContent">
+		<div id="loginInfo">
+			<form action="Authenticate" method="POST">
+				<fieldset>
+					<legend>Please provide your credentials</legend>
+					<table>
+						<tr>
+							<td>username:</td>
+							<td><input type="text" name="first_name"></td>
+						</tr>
+						<tr>
+							<td>password:</td>
+							<td><input type="password" name="last_name"></td>
+						</tr>
+						<tr>
+							<td colspan="2"><input id="button" type="submit" value="sign in"></td>
+						</tr>
+					</table>
+				</fieldset>
+			</form>
+		</div>
+	</div>
+
+	<footer>
+		<address>&copy;Rafael Battesti - Sheridan College - 2015</address>
+	</footer>
+
+</body>
+</html>
