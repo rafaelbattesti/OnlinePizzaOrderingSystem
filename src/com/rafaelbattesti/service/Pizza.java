@@ -4,20 +4,47 @@ import java.util.ArrayList;
 
 public class Pizza {
 	
+	//Pizza attributes
 	private String size;
-	private ArrayList<Topping> toppingList;
-	private double total;
+	private String[] toppingList;
+	private String isDelivery;
 	
-	public Pizza(String newSize) {
+	//Pizza constructor
+	public Pizza(String newSize, String[] newToppingList, String delivery) {
 		size = newSize;
-		toppingList = new ArrayList<>();
-	}
+		toppingList = newToppingList;
+		isDelivery = delivery;
+	} 
 	
-	public void addTopping(Topping newTopping) {
-		toppingList.add(newTopping);
-	}
-	
+	//Calculates the pizza total
 	public double calculateTotal() {
-		return 0.0;
+		double total = 0.0;
+		total += toppingList.length;
+		if (size.equals("large")) {
+			total += 7;
+		} else {
+			total += 5;
+		}
+		return total;
 	}
+	
+	//Override toString method
+	@Override
+	public String toString() {
+		String str = size + " pizza (" + isDelivery + ": ";
+		
+		for (int i = 0; i < toppingList.length; i++) {
+			if (i != toppingList.length - 1) {
+				str += toppingList[i] + ", ";
+			} else {
+				str += toppingList[i] + ")";
+			}
+		}
+		return str;
+	}
+
+	//Getters and setters
+	public String getSize() {return size;}
+	public String[] getToppingList() {return toppingList;}
+	public String getDelivery() {return isDelivery;}
 }

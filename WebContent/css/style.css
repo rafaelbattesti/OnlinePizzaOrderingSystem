@@ -24,7 +24,6 @@ body {
 	font-weight : 900; 
 	cursor : pointer;
 	padding: 10px 20px;
-	cursor: pointer;
 }
 
 #navigation li:hover {
@@ -61,7 +60,20 @@ body {
 fieldset {
 	position: relative;
 	margin: 0 auto;
-	width: 30%;
+	width: 50%;
+	float: left;
+	background-color: #ecf0f1;
+	border-radius: 8px;
+	border: 1px solid #2980b9;
+}
+
+.orders {
+	position: relative;
+	margin: 0 auto;
+	top: 10px;
+	width: 45%;
+	float: right;
+	text-align: left;
 	background-color: #ecf0f1;
 	border-radius: 8px;
 	border: 1px solid #2980b9;
@@ -82,22 +94,39 @@ td {
 	text-align: right;
 }
 
-#button {
+td.orderList {
+	text-align: left;
+}
+
+.left {
+	text-align: left;
+}
+
+.button {
 	font-family: 'Roboto', sans-serif;
 	color: #2980b9;
 	font-size: 1em;
+	text-align: center;
 	font-weight : 900; 
 	border: 1px solid #2980b9;
 	border-radius: 5px;
-	width: 80px;
+	width: 140px;
 	padding: 5px 10px;
 	background-color: #ffffff;
 	cursor: pointer;
 }
 
-#button:hover {
+.button:hover {
 	background-color: #2980b9;
 	color: #ffffff;
+}
+
+.orderHeader {
+	font-family: 'Roboto', sans-serif;
+	font-size: 1.1em;
+	color: #2980b9; 
+	font-weight : 900; 
+	padding: 10px 20px;
 }
 
 footer {
