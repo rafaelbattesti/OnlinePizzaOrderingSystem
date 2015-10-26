@@ -9,7 +9,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+
+import com.rafaelbattesti.service.Customer;
+import com.rafaelbattesti.service.Pizza;
 
 public class DataAccess {
 	
@@ -24,7 +28,9 @@ public class DataAccess {
 	private static final String ERR_CONNECT        = "Could not connect to database";
 	private static final String ERR_DISCONNECT     = "Could not disconnect from database";
 	private static final String ERR_PREPARE        = "Could not prepare statements for SQL";
-	private static final String ERR_RETR_USER      = "Could not retrieve record by id";
+	private static final String ERR_INSERT         = "Could not insert orders into database";
+	private static final String ERR_READING        = "Could not read from database";
+	private static final String ERR_RETR_USER      = "Could not retrieve user by username";
 	private static final String ERR_CLOSE_RESULT   = "Could not close the result resource";
 	private static final String ERR_MD5            = "Could not find MD5 algorithm";
 	private static final String ERR_USER_NOT_FOUND = "Sorry, user not found";
@@ -34,6 +40,7 @@ public class DataAccess {
 	private static final String SUC_PREPARE        = "SQL statements successfuly prepared";
 	private static final String SUC_CONNECT        = "Database successfuly connected";
 	private static final String SUC_DISCONNECT     = "Database successfuly disconnected";
+	private static final String SUC_INSERT         = "Orders successfully inserted!";
 	
 	
 	//Other constants
@@ -47,6 +54,8 @@ public class DataAccess {
 	//Prepared Statements
 	private PreparedStatement authenticatePstm;
 	private PreparedStatement updateLastLoginPstm;
+	private PreparedStatement insertOrdersPstm;
+	private PreparedStatement selectOrdersPstm;
 	
 
 	private void prepareAllStatements () {
@@ -56,12 +65,19 @@ public class DataAccess {
 		//SQL statements
 		String authenticateSql    = "SELECT Username, Password FROM Admin WHERE Username = ?;";
 		String updateLastLoginSql = "UPDATE Admin SET LastLogin = ? WHERE Username = ?;";
+		String insertOrdersSql    = "INSERT INTO OrderInfo (SizeOfPizza, NumOfToppings, Quantity, Delivery, Price)"
+										+ "VALUES (?, ?, ?, ?, ?);";
+		String selectOrdersSql    = "SELECT * FROM OrderInfo;";
 		
 		try {
 			
 			//Prepare statements and assign message
 			authenticatePstm    = conn.prepareStatement(authenticateSql);
 			updateLastLoginPstm = conn.prepareStatement(updateLastLoginSql);
+			insertOrdersPstm    = conn.prepareStatement(insertOrdersSql);
+			selectOrdersPstm    = conn.prepareStatement(selectOrdersSql);
+			
+			
 			message             = SUC_PREPARE;
 			
 		} catch (SQLException e) {
@@ -108,6 +124,69 @@ public class DataAccess {
 		} catch (SQLException e) {	
 			log = logError(e, ERR_DISCONNECT);
 		}
+	}
+	
+	public void insertOrders(Customer customer) {
+		clearMessages();
+		ArrayList<Pizza> pizzaList = customer.getPizzaList();
+		int affectedRows = 0;
+		
+		try {
+			
+			for (Pizza pizza : pizzaList) {
+				insertOrdersPstm.setString(1, pizza.getSize());
+				insertOrdersPstm.setInt(2, pizza.getToppingList().length);
+				insertOrdersPstm.setInt(3, pizza.getQty());
+				insertOrdersPstm.setBoolean(4, customer.getIsDelivery());
+				insertOrdersPstm.setDouble(5, pizza.calculateTotal());
+				
+				affectedRows = insertOrdersPstm.executeUpdate();
+				
+				// Updates message
+				if (affectedRows != 0) {
+					message = SUC_INSERT;
+				}
+			}
+			
+		} catch (SQLException e) {
+			log = logError(e, ERR_INSERT);
+		}
+	}
+	
+	public ArrayList<Pizza> selectDayOrders() {
+		
+		ResultSet result = null;
+		ArrayList<Pizza> pizzaList = new ArrayList<>();
+		
+		try {
+			
+			result = selectOrdersPstm.executeQuery();
+			
+			while(result.next()) {
+				String num = result.getString("SizeOfPizza");
+				int top = result.getInt("NumOfToppings");
+				int qty = result.getInt("Quantity");
+				boolean del = result.getBoolean("Delivery");
+				double total = result.getDouble("Price");
+				Pizza pizza = new Pizza(num, top, qty, del, total);
+				pizzaList.add(pizza);
+			}
+			
+		} catch (Exception e) {
+			log = logError(e, ERR_READING);
+		} finally {
+			if (result != null) {
+				
+				try {
+					result.close();
+				} catch (SQLException e) {
+					log = logError(e, ERR_CLOSE_RESULT);
+				}
+				
+			}
+		}
+		
+		return pizzaList;
 	}
 
 	public boolean authenticate(String username, String password) {
@@ -198,5 +277,4 @@ public class DataAccess {
 	public String getLog () {
 		return log;
 	}
-
 }

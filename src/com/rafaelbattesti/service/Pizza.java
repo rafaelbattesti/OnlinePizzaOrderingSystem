@@ -1,25 +1,40 @@
 package com.rafaelbattesti.service;
 
-import java.util.ArrayList;
-
 public class Pizza {
 	
-	//Pizza attributes
 	private String size;
 	private String[] toppingList;
-	private String isDelivery;
+	private int qty;
+	private boolean isDelivery;
+	private int numToppings;
+	private double totalPizza;
 	
-	//Pizza constructor
-	public Pizza(String newSize, String[] newToppingList, String delivery) {
+	public Pizza(String newSize, String[] newToppingList, int newQty) {
 		size = newSize;
 		toppingList = newToppingList;
-		isDelivery = delivery;
-	} 
+		qty = newQty;
+		numToppings = newToppingList.length;
+	}
 	
-	//Calculates the pizza total
+	public Pizza(String newSize, int newNumToppings, int newQty, boolean newIsDelivery, double total) {
+		size = newSize;
+		numToppings = newNumToppings;
+		qty = newQty;
+		isDelivery = newIsDelivery;
+		totalPizza = total;
+	}
+
 	public double calculateTotal() {
 		double total = 0.0;
-		total += toppingList.length;
+		
+		if (numToppings < 4) {
+			total += numToppings;
+		} else if (numToppings == 8){
+			total += numToppings - 2;
+		} else {
+			total += numToppings - 1;
+		}
+		
 		if (size.equals("large")) {
 			total += 7;
 		} else {
@@ -28,13 +43,12 @@ public class Pizza {
 		return total;
 	}
 	
-	//Override toString method
 	@Override
 	public String toString() {
-		String str = size + " pizza (" + isDelivery + ": ";
+		String str = size + " pizza (";
 		
-		for (int i = 0; i < toppingList.length; i++) {
-			if (i != toppingList.length - 1) {
+		for (int i = 0; i < numToppings; i++) {
+			if (i != numToppings - 1) {
 				str += toppingList[i] + ", ";
 			} else {
 				str += toppingList[i] + ")";
@@ -43,8 +57,14 @@ public class Pizza {
 		return str;
 	}
 
-	//Getters and setters
 	public String getSize() {return size;}
 	public String[] getToppingList() {return toppingList;}
-	public String getDelivery() {return isDelivery;}
+	public int getQty() {return qty;}
+	public int getNumToppings() {return numToppings;}
+	public void setNumToppings(int numToppings) {this.numToppings = numToppings;}
+	public boolean getIsDelivery() {return isDelivery;}
+	public void setDelivery(boolean isDelivery) {this.isDelivery = isDelivery;}
+	public double getTotalPizza() {return totalPizza;}
+	public void setTotalPizza(double totalPizza) {this.totalPizza = totalPizza;}
+	
 }

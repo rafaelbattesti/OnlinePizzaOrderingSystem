@@ -38,41 +38,38 @@ public class NextOrder extends HttpServlet {
 		
 		//Create customer object
 		Customer customer;
-		ArrayList<Pizza> pizzaList = (ArrayList<Pizza>) session.getAttribute("pizzaList");
 		
 		//session empty ? create : read
 		if (session.getAttribute("customer") != null) {
+			
+			//Get customer from session
 			customer = (Customer) session.getAttribute("customer");
 			
+			//Create new pizza
 			String delivery = request.getParameter("delivery");
 			String size = request.getParameter("size");
 			String[] toppingList = request.getParameterValues("topping");
-			int number = Integer.parseInt(request.getParameter("qty"));
+			int number = Integer.parseInt(request.getParameter("qty"));	
+			Pizza pizza = new Pizza(size, toppingList, number);
 			
-			Pizza pizza = new Pizza(size, toppingList, delivery);
-			
-			if (session.getAttribute("pizzaList") == null) {
-				pizzaList = new ArrayList<>();
-				for (int i = 0; i < number; i++) {
-					pizzaList.add(pizza);
-				}
-				session.setAttribute("pizzaList", pizzaList);
-			} else {
-				for (int i = 0; i < number; i++) {
-					pizzaList.add(pizza);
-				}
+			//Add pizza to customer
+			for (int i = 0; i < number; i++) {
+				customer.addPizza(pizza);
 			}
 			
 		} else {
+			
+			//Create new Customer
 			String firstName = request.getParameter("first_name");
 			String lastName = request.getParameter("last_name");
 			String phone = request.getParameter("phone");
 			String address = request.getParameter("address");
-			customer = new Customer(firstName, lastName, phone, address);
+			String delivery = request.getParameter("delivery");
+			customer = new Customer(firstName, lastName, phone, address, delivery);
+			
+			//Add customer to session
 			session.setAttribute("customer", customer);
 		}
-		
-
 		
 		//Print html
 		PrintWriter out = response.getWriter();
@@ -95,14 +92,6 @@ public class NextOrder extends HttpServlet {
 		out.println("<fieldset><legend>BUILD YOUR PIZZA</legend>");
 		out.println("<table>");
 		out.println("<tr>");
-		out.println("<td>Pickup or Delivery?</td>");
-		out.println("<td>");
-		out.println("<select name=\"delivery\" size=\"1\">");
-		out.println("<option value=\"delivery\" selected>Delivery</option>");
-		out.println("<option value=\"pickup\">Pickup</option>");
-		out.println("</select>");
-		out.println("</td>");
-		out.println("</tr>");
 		out.println("<td>Size:</td>");
 		out.println("<td><input type=\"radio\" name=\"size\" value=\"small\">Small");
 		out.println("<input type=\"radio\" name=\"size\" value=\"large\" checked>Large</td></tr>");
@@ -118,29 +107,26 @@ public class NextOrder extends HttpServlet {
 		out.println("<input type=\"checkbox\" name=\"topping\" value=\"beef\">Beef<br></td></tr>");
 		out.println("<tr>");
 		out.println("<tr><td>Number of Pizzas:</td><td><input type=\"text\" name=\"qty\" maxlenght=\"2\"></td></tr>");
+		out.println("<tr><td colspan=\"2\"><input class=\"button\" type=\"submit\" value=\"send\"></td></tr>");
+		out.println("</table></fieldset></form>");
 		
-		if (pizzaList != null) {
-			out.println("<tr><td><form action=\"Checkout\" method=\"POST\">");
-			out.println("<input class=\"button\" type=\"submit\" value=\"checkout\"></form></td>");
-			out.println("<td><input class=\"button\" type=\"submit\" value=\"send\"></td>");
-			out.println("</tr></table></fieldset></form>");
-			
+		if (!customer.getPizzaList().isEmpty()) {
+
+			//Create table for Orders
 			out.println("<table class=\"orders\">");
 			out.println("<th class=\"orderHeader\">YOUR ORDER</th>");
-			for (Pizza pizza : pizzaList) {
-				out.println("<tr><td class=\"orderList\">" + pizza.toString() + "</td></td>" );
+			for (Pizza pizza : customer.getPizzaList()) {
+				out.println("<tr><td class=\"orderList\">" + pizza.toString() + "</td></tr>" );
 			}
-			
+			out.println("<tr><td><form action=\"Checkout\" method=\"POST\">");
+			out.println("<input class=\"button\" type=\"submit\" value=\"checkout\"></form></td></tr>");
 			out.println("</table>");
-			out.println("</tr></table></fieldset></form></div></div>");
-			out.println("<footer><address>&copy;Rafael Battesti - Sheridan College - 2015</address></footer>");
-			out.println("</body></html>");	
-		} else {
-			out.println("<tr><td colspan=\"2\"><input class=\"button\" type=\"submit\" value=\"send\"></td>");	
-			out.println("</tr></table></fieldset></form></div></div>");
-			out.println("<footer><address>&copy;Rafael Battesti - Sheridan College - 2015</address></footer>");
-			out.println("</body></html>");	
 		}
+		
+		
+		out.println("</div></div>");
+		out.println("<footer><address>&copy;Rafael Battesti - Sheridan College - 2015</address></footer>");
+		out.println("</body></html>");	
 	}
 
 }

@@ -7,7 +7,7 @@ body {
 	color: #2980b9; 
 	font-weight : 900; 
 	width: 930px;
-	height: 15px;
+	height: auto;
 	margin: 0 auto;
 }
 
@@ -54,7 +54,7 @@ body {
 	border: 2px solid #2980b9;
 	border-radius: 10px; height : 400px;
 	padding: 50px 20px;
-	height: 400px;
+	height: 600px;
 }
 
 fieldset {
@@ -74,6 +74,15 @@ fieldset {
 	width: 45%;
 	float: right;
 	text-align: left;
+	background-color: #ecf0f1;
+	border-radius: 8px;
+	border: 1px solid #2980b9;
+}
+
+#receipt {
+	position: relative;
+	margin: 0 auto;
+	width: 50%;
 	background-color: #ecf0f1;
 	border-radius: 8px;
 	border: 1px solid #2980b9;
@@ -114,6 +123,7 @@ td.orderList {
 	padding: 5px 10px;
 	background-color: #ffffff;
 	cursor: pointer;
+	text-decoration: none;
 }
 
 .button:hover {
@@ -133,4 +143,16 @@ footer {
 	text-align: center;
 	color: #2980b9;
 	padding: 10px;
+}
+
+#warning {
+	font-family: 'Roboto', sans-serif;
+	font-size: 1.1em; 
+	font-weight : 900; 
+	text-align: center;
+	color: #e74c3c;
+}
+
+.center {
+	text-align: center;
 }
