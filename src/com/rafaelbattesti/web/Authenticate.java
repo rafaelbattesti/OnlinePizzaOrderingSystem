@@ -1,8 +1,6 @@
 package com.rafaelbattesti.web;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -11,10 +9,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.rafaelbattesti.service.Manager;
+import com.rafaelbattesti.service.ManagerInterface;
 import com.rafaelbattesti.service.User;
+import com.rafaelbattesti.service.UserInterface;
 
 /**
- * Servlet implementation class Authenticate
+ * Servlet for user authentication.
  */
 @WebServlet("/Authenticate")
 public class Authenticate extends HttpServlet {
@@ -25,7 +25,6 @@ public class Authenticate extends HttpServlet {
      */
     public Authenticate() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
 	/**
@@ -34,20 +33,19 @@ public class Authenticate extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		//Creates a manager to authenticate admin
-		Manager manager = new Manager();
+		ManagerInterface manager = new Manager();
 		
 		//Gets parameters from user
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
-		User user = new User(username, password);
-		user.setAuth(manager.authenticate(username, password));
-		user.setMessage(manager.getDatabaseMessage());
+		
+		UserInterface user = new User(username, password);
+		user = manager.authenticate(user);
 		
 		//Get session
 		HttpSession session = request.getSession();
 		
-		//Authenticate
-		boolean isAuth = manager.authenticate(username, password);
+		//Sets user to session for validation at the /Admin servlet
 		session.setAttribute("user", user);
 		response.sendRedirect("/Assign2/Admin");
 	}

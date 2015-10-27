@@ -12,52 +12,156 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-import com.rafaelbattesti.service.Customer;
+import com.rafaelbattesti.service.CustomerInterface;
 import com.rafaelbattesti.service.Pizza;
+import com.rafaelbattesti.service.PizzaInterface;
 
-public class DataAccess {
+/**
+ * Models a database object for connection and access.
+ * @author rafaelbattesti
+ * @since 2015.10.20
+ *
+ */
+public class DataAccess implements DataAccessInterface {
 	
-	//JDBC and DB credentials
+	/**
+	 * JDBC Driver
+	 */
 	private static final String JDBC_DRIVER       = "com.mysql.jdbc.Driver";
+	
+	/**
+	 * DB URL
+	 */
 	private static final String DB_URL            = "jdbc:mysql://localhost/PizzaParlour";
+	
+	/**
+	 * DB Username
+	 */
 	private static final String DB_USER           = "root";
+	
+	/**
+	 * DB Password
+	 */
 	private static final String DB_PASS           = "1111";
 	
-	//Error Messages
+	/**
+	 * Error finding Driver
+	 */
 	private static final String ERR_DRIVER         = "JDBC Driver not found";
+	
+	/**
+	 * Error connecting to DB
+	 */
 	private static final String ERR_CONNECT        = "Could not connect to database";
+	
+	/**
+	 * Error disconnecting from DB 
+	 */
 	private static final String ERR_DISCONNECT     = "Could not disconnect from database";
+	
+	/**
+	 * Error preparing statements
+	 */
 	private static final String ERR_PREPARE        = "Could not prepare statements for SQL";
+	
+	/**
+	 * Error inserting orders into DB
+	 */
 	private static final String ERR_INSERT         = "Could not insert orders into database";
+	
+	/**
+	 * Error reading orders form DB
+	 */
 	private static final String ERR_READING        = "Could not read from database";
+	
+	/**
+	 * Error retrieving user information from DB
+	 */
 	private static final String ERR_RETR_USER      = "Could not retrieve user by username";
+	
+	/**
+	 * Error closing result resources
+	 */
 	private static final String ERR_CLOSE_RESULT   = "Could not close the result resource";
+	
+	/**
+	 * Error finding MD5 algorithm
+	 */
 	private static final String ERR_MD5            = "Could not find MD5 algorithm";
+	
+	/**
+	 * Error user not found
+	 */
 	private static final String ERR_USER_NOT_FOUND = "Sorry, user not found";
+	
+	/**
+	 * Error wrong password
+	 */
 	private static final String ERR_WRONG_PASSWD   = "Sorry, wrong password";
 	
-	//Success Messages
+	/**
+	 * Success preparing statements
+	 */
 	private static final String SUC_PREPARE        = "SQL statements successfuly prepared";
+	
+	/**
+	 * Success connecting to DB
+	 */
 	private static final String SUC_CONNECT        = "Database successfuly connected";
+	
+	/**
+	 * Success disconnecting from DB
+	 */
 	private static final String SUC_DISCONNECT     = "Database successfuly disconnected";
+	
+	/**
+	 * Success inserting into DB
+	 */
 	private static final String SUC_INSERT         = "Orders successfully inserted!";
 	
-	
-	//Other constants
+	/**
+	 * Date format
+	 */
 	private static final String DATE_FORMAT        = "yyyy/MM/dd HH:mm:ss";
 	
-	//Data Fields
+	/**
+	 * Connection to DB
+	 */
 	private Connection conn;
-	private String     log;
-	private String     message;
+	
+	/**
+	 * Error log
+	 */
+	private String log;
+	
+	/**
+	 * Message to upper layers
+	 */
+	private String message;
 
-	//Prepared Statements
+	/**
+	 * Prepared SQL for admin authentication
+	 */
 	private PreparedStatement authenticatePstm;
+	
+	/**
+	 * Prepared SQL for Updating last login
+	 */
 	private PreparedStatement updateLastLoginPstm;
+	
+	/**
+	 * Prepared SQL for inserting orders into DB
+	 */
 	private PreparedStatement insertOrdersPstm;
+	
+	/**
+	 * Prepared SQL for retrieving orders from DB
+	 */
 	private PreparedStatement selectOrdersPstm;
 	
-
+	/**
+	 * This prepares all statements on connection
+	 */
 	private void prepareAllStatements () {
 		
 		clearMessages();
@@ -71,13 +175,11 @@ public class DataAccess {
 		
 		try {
 			
-			//Prepare statements and assign message
+			//Prepare statements and updates message
 			authenticatePstm    = conn.prepareStatement(authenticateSql);
 			updateLastLoginPstm = conn.prepareStatement(updateLastLoginSql);
 			insertOrdersPstm    = conn.prepareStatement(insertOrdersSql);
 			selectOrdersPstm    = conn.prepareStatement(selectOrdersSql);
-			
-			
 			message             = SUC_PREPARE;
 			
 		} catch (SQLException e) {
@@ -85,16 +187,18 @@ public class DataAccess {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.rafaelbattesti.data.DataAccessInterface#connect()
+	 */
+	@Override
 	public void connect() {
 		
 		clearMessages();
 		
 		try {
 			
-			//Initializes JDBC Driver
+			//Initializes JDBC Driver, create connection and updates message
 			Class.forName(JDBC_DRIVER);
-			
-			//Creates a connection and assigns message
 			conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
 			message = SUC_CONNECT;
 			
@@ -111,13 +215,16 @@ public class DataAccess {
 		
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.rafaelbattesti.data.DataAccessInterface#disconnect()
+	 */
+	@Override
 	public void disconnect() {
 		
 		clearMessages();
 		
 		try {
 			if (conn != null) {
-				//Closes connection and assigns message
 				conn.close();
 				message = SUC_DISCONNECT;
 			}	
@@ -126,19 +233,24 @@ public class DataAccess {
 		}
 	}
 	
-	public void insertOrders(Customer customer) {
+	/* (non-Javadoc)
+	 * @see com.rafaelbattesti.data.DataAccessInterface#insertOrders(com.rafaelbattesti.service.Customer)
+	 */
+	@Override
+	public void insertOrders(CustomerInterface customer) {
+		
 		clearMessages();
 		ArrayList<Pizza> pizzaList = customer.getPizzaList();
 		int affectedRows = 0;
 		
 		try {
 			
-			for (Pizza pizza : pizzaList) {
+			for (PizzaInterface pizza : pizzaList) {
 				insertOrdersPstm.setString(1, pizza.getSize());
 				insertOrdersPstm.setInt(2, pizza.getToppingList().length);
 				insertOrdersPstm.setInt(3, pizza.getQty());
-				insertOrdersPstm.setBoolean(4, customer.getIsDelivery());
-				insertOrdersPstm.setDouble(5, pizza.calculateTotal());
+				insertOrdersPstm.setBoolean(4, customer.getDelivery());
+				insertOrdersPstm.setDouble(5, pizza.getTotalPizza());
 				
 				affectedRows = insertOrdersPstm.executeUpdate();
 				
@@ -153,6 +265,10 @@ public class DataAccess {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.rafaelbattesti.data.DataAccessInterface#selectDayOrders()
+	 */
+	@Override
 	public ArrayList<Pizza> selectDayOrders() {
 		
 		ResultSet result = null;
@@ -175,20 +291,22 @@ public class DataAccess {
 		} catch (Exception e) {
 			log = logError(e, ERR_READING);
 		} finally {
+			
 			if (result != null) {
-				
 				try {
 					result.close();
 				} catch (SQLException e) {
 					log = logError(e, ERR_CLOSE_RESULT);
 				}
-				
 			}
 		}
-		
 		return pizzaList;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.rafaelbattesti.data.DataAccessInterface#authenticate(java.lang.String, java.lang.String)
+	 */
+	@Override
 	public boolean authenticate(String username, String password) {
 		
 		clearMessages();
@@ -228,6 +346,11 @@ public class DataAccess {
 		return isAuth;
 	}
 	
+	/**
+	 * This hashes the user password to compare with the hash stored in the DB.
+	 * @param password ASCII password
+	 * @return MD5 password
+	 */
 	private String MD5 (String password) {
 		
 		StringBuffer buffer = new StringBuffer();
@@ -248,6 +371,12 @@ public class DataAccess {
 		
 	}
 	
+	/**
+	 * This logs the error
+	 * @param e exception thrown
+	 * @param errMessage message to update log
+	 * @return composed log with date and time of occurence
+	 */
 	private String logError (Exception e, String errMessage) {
 		
 		String date = dateFormatter();
@@ -261,19 +390,34 @@ public class DataAccess {
 		}
 	}
 	
+	/**
+	 * Formats a date and returns the string date
+	 * @return
+	 */
 	private String dateFormatter () {
 		DateFormat df = new SimpleDateFormat(DATE_FORMAT);
 		return df.format(new Date());
 	}
 
+	/**
+	 * Clears the log and message before proceeding to DB operations
+	 */
 	private void clearMessages () {
 		log = message = null;
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.rafaelbattesti.data.DataAccessInterface#getMessage()
+	 */
+	@Override
 	public String getMessage() {
 		return message;
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.rafaelbattesti.data.DataAccessInterface#getLog()
+	 */
+	@Override
 	public String getLog () {
 		return log;
 	}

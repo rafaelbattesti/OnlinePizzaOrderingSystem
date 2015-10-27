@@ -11,13 +11,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.rafaelbattesti.service.Customer;
+import com.rafaelbattesti.service.CustomerInterface;
 import com.rafaelbattesti.service.Manager;
-import com.rafaelbattesti.service.Pizza;
+import com.rafaelbattesti.service.ManagerInterface;
+import com.rafaelbattesti.service.PizzaInterface;
 import com.rafaelbattesti.service.Receipt;
+import com.rafaelbattesti.service.ReceiptInterface;
 
 /**
- * Servlet implementation class Checkout
+ * Servlet to implement the customer checkout.
  */
 @WebServlet("/Checkout")
 public class Checkout extends HttpServlet {
@@ -39,18 +41,16 @@ public class Checkout extends HttpServlet {
 		HttpSession session = request.getSession();
 
 		//Get parameters from session
-		Customer customer = (Customer) session.getAttribute("customer");
+		CustomerInterface customer = (CustomerInterface) session.getAttribute("customer");
 
 		//Create manager to record database
-		Manager manager = new Manager();
+		ManagerInterface manager = new Manager();
 
 		//Creates a new receipt
-		Receipt receipt = new Receipt();
-		receipt.setDate();
-		receipt.setCustomer(customer);
+		ReceiptInterface receipt = new Receipt();
 		
 		try {
-			receipt.setTime();
+			receipt.setTime(customer);
 		} catch (ParseException e) {
 			throw new RuntimeException();
 		}
@@ -75,24 +75,23 @@ public class Checkout extends HttpServlet {
 		out.println("<li>MENU</li><li>LOCATIONS</li><li>TRACKER</li></ul></nav></header>");
 		out.println("<div id=\"pageContent\">");
 		out.println("<div id=\"loginInfo\">");
-
 		out.println("<table id=\"receipt\">");
-		out.println("<th class=\"orderHeader\">YOUR RECEIPT</th>");
-		out.println("<tr><td class=\"orderList\" colspan=\"2\">" + customer.getLastName() + ", " + customer.getFirstName() + "</td></tr>");
-		out.println("<tr><td class=\"orderList\" colspan=\"2\">" + customer.getPhone() + "</td></tr>");
-		out.println("<tr><td class=\"orderList\" colspan=\"2\">" + customer.getAddress() + "</td></tr>");
-		out.println("<tr><td class=\"orderList\">" + customer.getDeliveryMethod() + " time:</td>");
-		out.println("<td class=\"orderList\">" + receipt.getTime() + "</td></tr>");
+		out.println("<th colspan=\"2\" class=\"orderHeader\">YOUR RECEIPT</th>");
+		out.println("<tr><td class=\"orderList\" colspan=\"2\">Customer Name: " + customer.getLastName() + ", " + customer.getFirstName() + "</td></tr>");
+		out.println("<tr><td class=\"orderList\" colspan=\"2\">Phone Number: " + customer.getPhone() + "</td></tr>");
+		out.println("<tr><td class=\"orderList\" colspan=\"2\">Address: " + customer.getAddress() + "</td></tr>");
+		out.println("<tr><td class=\"orderList\" colspan=\"2\">" + customer.getDeliveryString() + " time: ");
+		out.println(receipt.getTime() + "</td></tr>");
 		out.println("<tr><td colspan=\"2\"><hr></td></tr>");
 
-		for (Pizza pizza : customer.getPizzaList()) {
+		for (PizzaInterface pizza : customer.getPizzaList()) {
 			out.println("<tr><td class=\"orderList\">" + pizza.toString() + "</td>" );
-			out.println("<td> $" + pizza.calculateTotal() + "</td></tr>" );
+			out.println("<td> $" + pizza.getTotalPizza() + "</td></tr>" );
 		}
 
-		out.println("<tr><td>TOTAL $</td><td>" + receipt.calculateTotal() + "</td></tr>");
+		out.println("<tr><td colspan=\"2\" class=\"orderHeader\">TOTAL: $" + receipt.calculateTotal(customer) + "</td></tr>");
 		out.println("<tr><td colspan=\"2\"></td></tr>");
-		out.println("<tr><td colspan=\"2\"><a href=\"OnlinePizza.html\"></td></tr>");
+		out.println("<tr><td colspan=\"2\" class=\"center\"><a href=\"OnlinePizza.html\">back to order</a></td></tr>");
 		out.println("</table></div></div>");
 		out.println("<footer><address>&copy;Rafael Battesti - Sheridan College - 2015</address></footer>");
 		out.println("</body></html>");	

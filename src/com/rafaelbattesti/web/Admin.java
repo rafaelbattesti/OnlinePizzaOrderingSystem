@@ -12,11 +12,13 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.rafaelbattesti.service.Manager;
+import com.rafaelbattesti.service.ManagerInterface;
 import com.rafaelbattesti.service.Pizza;
-import com.rafaelbattesti.service.User;
+import com.rafaelbattesti.service.PizzaInterface;
+import com.rafaelbattesti.service.UserInterface;
 
 /**
- * Servlet implementation class Admin
+ * Servlet for administrative access.
  */
 @WebServlet("/Admin")
 public class Admin extends HttpServlet {
@@ -27,7 +29,6 @@ public class Admin extends HttpServlet {
      */
     public Admin() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
 	/**
@@ -36,7 +37,7 @@ public class Admin extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		//Get session
 		HttpSession session = request.getSession();
-		User user = (User) session.getAttribute("user");
+		UserInterface user = (UserInterface) session.getAttribute("user");
 		
 		//Print html
 		PrintWriter out = response.getWriter();
@@ -44,9 +45,8 @@ public class Admin extends HttpServlet {
 		
 		if (user.getAuth()) {
 			
-			//Create a manager
-			Manager manager = new Manager();
-			
+			//Create a manager and retrieve the list of pizzas
+			ManagerInterface manager = new Manager();
 			ArrayList<Pizza> pizzaList = manager.daySummary();
 			
 			//Print correct page
@@ -70,7 +70,7 @@ public class Admin extends HttpServlet {
 			out.println("<td class=\"orderHeader\">Price</td></tr>" );
 			out.println("<tr><td colspan=\"5\"><hr></td></tr>" );
 			
-			for (Pizza pizza : pizzaList) {
+			for (PizzaInterface pizza : pizzaList) {
 
 				out.println("<tr><td class=\"center\">" + pizza.getSize() + "</td>" );
 				out.println("<td class=\"center\">" + pizza.getNumToppings() + "</td>" );
@@ -81,7 +81,7 @@ public class Admin extends HttpServlet {
 
 			out.println("<tr><td colspan=\"5\"><hr></td></tr>" );
 			out.println("<tr><td colspan=\"4\" class=\"orderHeader\">DAY TOTAL = $</td><td class=\"orderHeader\">" 
-							+ manager.calculateTotal() + "</td></tr>");
+							+ manager.calculateTotal(pizzaList) + "</td></tr>");
 			out.println("<tr><td colspan=\"5\"></td></tr>");
 			out.println("<tr><td colspan=\"5\" class=\"center\"><a href=\"OnlinePizza.html\">back to order</a></td></tr>");
 			out.println("</table></div></div>");

@@ -1,48 +1,95 @@
 package com.rafaelbattesti.service;
 
-public class Pizza {
+/**
+ * Models a Pizza object.
+ * @author rafaelbattesti
+ * @since 2015.10.25
+ */
+public class Pizza implements PizzaInterface {
 	
+	/**
+	 * Size of the pizza
+	 */
 	private String size;
+	
+	/**
+	 * List of toppings
+	 */
 	private String[] toppingList;
+	
+	/**
+	 * Qty of the same pizza
+	 */
 	private int qty;
+	
+	/**
+	 * Delivery or takeout
+	 */
 	private boolean isDelivery;
+	
+	/**
+	 * Number of toppings
+	 */
 	private int numToppings;
+	
+	/**
+	 * Total price of the pizza applied discount.
+	 */
 	private double totalPizza;
 	
-	public Pizza(String newSize, String[] newToppingList, int newQty) {
-		size = newSize;
-		toppingList = newToppingList;
-		qty = newQty;
-		numToppings = newToppingList.length;
+	/**
+	 * Constructs a pizza from the user input
+	 * @param size of the pizza
+	 * @param toppingList from checkboxes
+	 * @param qty of pizzas of the same flavor
+	 */
+	public Pizza(String size, String[] toppingList, int qty) {
+		this.size = size;
+		this.toppingList = toppingList;
+		this.qty = qty;
+		this.numToppings = toppingList.length;
+		calculateTotal();
 	}
 	
-	public Pizza(String newSize, int newNumToppings, int newQty, boolean newIsDelivery, double total) {
-		size = newSize;
-		numToppings = newNumToppings;
-		qty = newQty;
-		isDelivery = newIsDelivery;
-		totalPizza = total;
+	/**
+	 * Constructs a pizza from the Database information
+	 * @param size of the pizza
+	 * @param numToppings how many toppings
+	 * @param qty of the same pizza
+	 * @param isDelivery or takeout
+	 * @param totalPizza total of the pizza
+	 */
+	public Pizza(String size, int numToppings, int qty, boolean isDelivery, double totalPizza) {
+		this.size = size;
+		this.numToppings = numToppings;
+		this.qty = qty;
+		this.isDelivery = isDelivery;
+		this.totalPizza = totalPizza;
 	}
 
-	public double calculateTotal() {
-		double total = 0.0;
+	/**
+	 * This calculates the total price of the pizza applied discounts
+	 */
+	private void calculateTotal() {
 		
 		if (numToppings < 4) {
-			total += numToppings;
+			totalPizza += numToppings;
 		} else if (numToppings == 8){
-			total += numToppings - 2;
+			totalPizza += numToppings - 2;
 		} else {
-			total += numToppings - 1;
+			totalPizza += numToppings - 1;
 		}
 		
 		if (size.equals("large")) {
-			total += 7;
+			totalPizza += 7;
 		} else {
-			total += 5;
+			totalPizza += 5;
 		}
-		return total;
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.rafaelbattesti.service.PizzaInterface#toString()
+	 */
 	@Override
 	public String toString() {
 		String str = size + " pizza (";
@@ -57,14 +104,51 @@ public class Pizza {
 		return str;
 	}
 
-	public String getSize() {return size;}
-	public String[] getToppingList() {return toppingList;}
-	public int getQty() {return qty;}
-	public int getNumToppings() {return numToppings;}
-	public void setNumToppings(int numToppings) {this.numToppings = numToppings;}
-	public boolean getIsDelivery() {return isDelivery;}
-	public void setDelivery(boolean isDelivery) {this.isDelivery = isDelivery;}
-	public double getTotalPizza() {return totalPizza;}
-	public void setTotalPizza(double totalPizza) {this.totalPizza = totalPizza;}
+	/* (non-Javadoc)
+	 * @see com.rafaelbattesti.service.PizzaInterface#getSize()
+	 */
+	@Override
+	public String getSize() {
+		return size;
+	}
 	
+	/* (non-Javadoc)
+	 * @see com.rafaelbattesti.service.PizzaInterface#getToppingList()
+	 */
+	@Override
+	public String[] getToppingList() {
+		return toppingList;
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.rafaelbattesti.service.PizzaInterface#getQty()
+	 */
+	@Override
+	public int getQty() {
+		return qty;
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.rafaelbattesti.service.PizzaInterface#getNumToppings()
+	 */
+	@Override
+	public int getNumToppings() {
+		return numToppings;
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.rafaelbattesti.service.PizzaInterface#getIsDelivery()
+	 */
+	@Override
+	public boolean getIsDelivery() {
+		return isDelivery;
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.rafaelbattesti.service.PizzaInterface#getTotalPizza()
+	 */
+	@Override
+	public double getTotalPizza() {
+		return totalPizza;
+	}
 }

@@ -3,53 +3,86 @@ package com.rafaelbattesti.service;
 import java.util.ArrayList;
 
 import com.rafaelbattesti.data.DataAccess;
+import com.rafaelbattesti.data.DataAccessInterface;
 
-public class Manager {
+/**
+ * Models a Manager to manage access to database.
+ * @author rafaelbattesti
+ * @since 2015.10.25
+ */
+public class Manager implements ManagerInterface {
 	
-	private DataAccess db;
+	/**
+	 * Access to database
+	 */
+	private DataAccessInterface db;
+	
+	/**
+	 * Message to the view
+	 */
 	private String message;
-	private ArrayList<Pizza> pizzaList;
 	
+	/**
+	 * Constructs a DB
+	 */
 	public Manager () {
 		db = new DataAccess();
 	}
 
-	public boolean authenticate(String username, String password) {
-		boolean isAuth = false;
+	/* (non-Javadoc)
+	 * @see com.rafaelbattesti.service.ManagerInterface#authenticate(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public User authenticate(UserInterface user) {
 		
 		db.connect();
-		isAuth = db.authenticate(username, password);
-		message = db.getMessage();
+		user.setAuth(db.authenticate(user.getUsername(), user.getPassword()));
+		user.setMessage(db.getMessage());
 		db.disconnect();
 		
-		return isAuth;
+		return (User) user;
 	}
 	
-	public void addOrder(Customer customer) {
+	/* (non-Javadoc)
+	 * @see com.rafaelbattesti.service.ManagerInterface#addOrder(com.rafaelbattesti.service.CustomerInterface)
+	 */
+	@Override
+	public void addOrder(CustomerInterface customer) {
 		db.connect();
 		db.insertOrders(customer);
 		message = db.getMessage();
 		db.disconnect();
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.rafaelbattesti.service.ManagerInterface#daySummary()
+	 */
+	@Override
 	public ArrayList<Pizza> daySummary() {
 		db.connect();
-		pizzaList = db.selectDayOrders();
+		ArrayList<Pizza> pizzaList = db.selectDayOrders();
 		message = db.getMessage();
 		db.disconnect();
 		return pizzaList;
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.rafaelbattesti.service.ManagerInterface#getDatabaseMessage()
+	 */
+	@Override
 	public String getDatabaseMessage () {
 		return message;
 	}
 
-	public double calculateTotal() {
+	/* (non-Javadoc)
+	 * @see com.rafaelbattesti.service.ManagerInterface#calculateTotal(java.util.ArrayList)
+	 */
+	@Override
+	public double calculateTotal(ArrayList<Pizza> pizzaList) {
 		double total = 0.0;
-		for (Pizza pizza : pizzaList) {
+		for (PizzaInterface pizza : pizzaList) {
 			total += pizza.getTotalPizza();
 		}
 		return total;
 	}
-
 }

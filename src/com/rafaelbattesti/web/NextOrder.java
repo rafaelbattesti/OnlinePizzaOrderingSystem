@@ -2,8 +2,6 @@ package com.rafaelbattesti.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -12,10 +10,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.rafaelbattesti.service.Customer;
+import com.rafaelbattesti.service.CustomerInterface;
 import com.rafaelbattesti.service.Pizza;
+import com.rafaelbattesti.service.PizzaInterface;
 
 /**
- * Servlet implementation class Order
+ * Servlet to control orders until checkout
  */
 @WebServlet("/NextOrder")
 public class NextOrder extends HttpServlet {
@@ -37,16 +37,15 @@ public class NextOrder extends HttpServlet {
 		HttpSession session = request.getSession();
 		
 		//Create customer object
-		Customer customer;
+		CustomerInterface customer;
 		
 		//session empty ? create : read
 		if (session.getAttribute("customer") != null) {
 			
 			//Get customer from session
-			customer = (Customer) session.getAttribute("customer");
+			customer = (CustomerInterface) session.getAttribute("customer");
 			
 			//Create new pizza
-			String delivery = request.getParameter("delivery");
 			String size = request.getParameter("size");
 			String[] toppingList = request.getParameterValues("topping");
 			int number = Integer.parseInt(request.getParameter("qty"));	
@@ -115,7 +114,7 @@ public class NextOrder extends HttpServlet {
 			//Create table for Orders
 			out.println("<table class=\"orders\">");
 			out.println("<th class=\"orderHeader\">YOUR ORDER</th>");
-			for (Pizza pizza : customer.getPizzaList()) {
+			for (PizzaInterface pizza : customer.getPizzaList()) {
 				out.println("<tr><td class=\"orderList\">" + pizza.toString() + "</td></tr>" );
 			}
 			out.println("<tr><td><form action=\"Checkout\" method=\"POST\">");
